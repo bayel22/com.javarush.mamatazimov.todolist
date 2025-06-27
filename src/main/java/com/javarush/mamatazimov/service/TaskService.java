@@ -30,8 +30,12 @@ public class TaskService {
         return taskDAO.getTask(id);
     }
 
-    public void saveOrUpdateTask(Task task) {
-        taskDAO.saveOrUpdateTask(task);
+    public void addTask(Task task) {
+        taskDAO.addTask(task);
+    }
+
+    public void editTask(Task task) {
+        taskDAO.editTask(task);
     }
 
     public void deleteTask(int id) {

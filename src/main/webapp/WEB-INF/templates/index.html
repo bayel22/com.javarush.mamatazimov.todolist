@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Todo List</title>
+    <meta charset="UTF-8"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        form {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 1rem;
+        }
+        select {
+            padding: 6px 10px;
+            font-size: 1rem;
+        }
+        button {
+            padding: 6px 12px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 25px;
+        }
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .pagination a.current {
+            font-weight: bold;
+            color: black;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Todo List</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="task : ${tasks}">
+        <td th:text="${task.id}">1</td>
+        <td th:text="${task.description}">Description</td>
+        <td th:text="${task.status}">IN_PROGRESS</td>
+        <td>
+            <!-- For simplicity, editing and deleting via JS or future pages -->
+            <button th:attr="onclick='editTask(' + ${task.id} + ')'">Edit</button>
+            <button th:attr="onclick='deleteTask(' + ${task.id} + ')'">Delete</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Add New Task</h2>
+<form id="addTaskForm" th:action="@{/}" method="post">
+    <input type="text" id="description" name="description" placeholder="Task description" required />
+    <select id="status" name="status">
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="DONE">Done</option>
+        <option value="PAUSED">Paused</option>
+    </select>
+    <button type="submit">Add Task</button>
+</form>
+
+<div class="pagination">
+    <!-- Пример пагинации, надо добавить в контроллер реальные данные для totalPages и currentPage -->
+    <a th:href="@{/(page=${1}, pageSize=${15})}" class="current">1</a>
+    <a th:href="@{/(page=${2}, pageSize=${15})}">2</a>
+    <a th:href="@{/(page=${3}, pageSize=${15})}">3</a>
+</div>
+
+<script>
+    // Для простоты пример: обработка submit формы через fetch API
+    document.getElementById('addTaskForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const description = document.getElementById('description').value;
+        const status = document.getElementById('status').value;
+
+        fetch('/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({description: description, status: status})
+        })
+            .then(() => window.location.reload())
+            .catch(err => alert('Ошибка при добавлении задачи'));
+    });
+
+    function deleteTask(id) {
+        if (confirm('Удалить задачу #' + id + '?')) {
+            fetch('/' + id, {method: 'DELETE'})
+                .then(() => window.location.reload())
+                .catch(err => alert('Ошибка при удалении задачи'));
+        }
+    }
+
+    function editTask(id) {
+        const newDescription = prompt('Введите новое описание:');
+        if (!newDescription) return;
+        const newStatus = prompt('Введите новый статус (IN_PROGRESS, DONE, PAUSED):', 'IN_PROGRESS');
+        if (!newStatus) return;
+
+        fetch('/' + id, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({description: newDescription, status: newStatus})
+        })
+            .then(() => window.location.reload())
+            .catch(err => alert('Ошибка при редактировании задачи'));
+    }
+</script>
+
+</body>
+</html>

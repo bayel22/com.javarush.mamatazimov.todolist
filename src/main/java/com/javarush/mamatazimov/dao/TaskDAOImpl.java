@@ -26,11 +26,6 @@ public class TaskDAOImpl implements TaskDAO {
     }
 
     @Override
-    public void saveOrUpdateTask(Task task) {
-        sessionFactory.getCurrentSession().saveOrUpdate(task);
-    }
-
-    @Override
     public void deleteTask(int id) {
         Session session = sessionFactory.getCurrentSession();
         Task task = session.get(Task.class, id);
@@ -48,4 +43,13 @@ public class TaskDAOImpl implements TaskDAO {
                 .list();
     }
 
+    @Override
+    public void addTask(Task task) {
+        sessionFactory.getCurrentSession().save(task);
+    }
+
+    @Override
+    public void editTask(Task task) {
+        sessionFactory.getCurrentSession().update(task);
+    }
 }

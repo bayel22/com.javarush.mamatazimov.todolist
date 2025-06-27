@@ -7,7 +7,8 @@ import java.util.List;
 public interface TaskDAO {
     List<Task> getAllTasks();
     Task getTask(int id);
-    void saveOrUpdateTask(Task task);
+    void addTask(Task task);
+    void editTask(Task task);
     void deleteTask(int id);
     List<Task>  getTasksPaged(int  page, int pageSize);
 }
