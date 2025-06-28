@@ -32,6 +32,7 @@ public class AppConfig {
         config.setUsername(dbUser);
         config.setPassword(dbPassword);
         config.setMaximumPoolSize(5);
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         return new HikariDataSource(config);
     }
 
@@ -45,7 +46,6 @@ public class AppConfig {
         props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         props.setProperty("hibernate.show_sql", "true");
         props.setProperty("hibernate.hbm2ddl.auto", "validate");
-
         factory.setHibernateProperties(props);
 
         return factory;
@@ -55,5 +55,4 @@ public class AppConfig {
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
         return new HibernateTransactionManager(sessionFactory);
     }
-
 }
