@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import static java.util.Objects.isNull;
+
 @Controller
 @RequestMapping("/")
 public class TaskController {
@@ -25,29 +27,23 @@ public class TaskController {
         return "index";
     }
 
-    @PutMapping("/{id}")
-    public void editTask(@PathVariable int id, @RequestBody  TaskDTO taskDTO) {
-        Task task = taskService.getTask(id);
-        if (task != null) {
-            task.setDescription(taskDTO.getDescription());
-            task.setStatus(taskDTO.getStatus());
-            taskService.editTask(task);
+    @PostMapping("/{id}")
+    public void editTask(Model model, @PathVariable("id") Integer id, @RequestBody TaskDTO taskDTO) {
+        if (isNull(id) || id <= 0) {
+            throw new RuntimeException("Invalid id: " + id);
         }
+        taskService.editTask(id, taskDTO);
     }
 
     @PostMapping("/")
     public void addTask(@RequestBody TaskDTO taskDTO) {
-        Task task = new Task();
-        task.setDescription(taskDTO.getDescription());
-        task.setStatus(taskDTO.getStatus());
-        taskService.addTask(task);
+        taskService.addTask(taskDTO);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable int id) {
-        if (taskService.getTask(id) != null) {
-            taskService.deleteTask(id);
-        }
+    @ResponseBody
+    public void deleteTask(Model model, @PathVariable("id") int id) {
+        taskService.deleteTask(id);
     }
 
 }
