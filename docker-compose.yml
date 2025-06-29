@@ -12,5 +12,9 @@ services:
     volumes:
       - todolist-mysql:/var/lib/mysql
 
+  todolist:
+    image:
+
+
 volumes:
   todolist-mysql:

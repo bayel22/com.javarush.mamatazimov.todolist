@@ -1,12 +1,15 @@
 package com.javarush.mamatazimov.controller;
 
 import com.javarush.mamatazimov.dto.TaskDTO;
-import com.javarush.mamatazimov.entity.Task;
 import com.javarush.mamatazimov.service.TaskService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Objects.isNull;
 
@@ -21,29 +24,39 @@ public class TaskController {
 
     @GetMapping("/")
     public String getTasks(Model model,
-                               @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                               @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize) {
+                           @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                           @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize) {
         model.addAttribute("tasks", taskService.getTasksPaged(page, pageSize));
+        model.addAttribute("current_page", page);
+        int totalPages = (int) Math.ceil(1.0 * taskService.getTaskCount() / pageSize);
+        if (totalPages > 1) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
+            model.addAttribute("page_numbers", pageNumbers);
+        }
         return "index";
     }
 
     @PostMapping("/{id}")
-    public void editTask(Model model, @PathVariable("id") Integer id, @RequestBody TaskDTO taskDTO) {
+    @ResponseBody
+    public ResponseEntity<?> editTask(@PathVariable("id") Integer id, @RequestBody TaskDTO taskDTO) {
         if (isNull(id) || id <= 0) {
-            throw new RuntimeException("Invalid id: " + id);
+            return ResponseEntity.badRequest().body("Invalid id: " + id);
         }
         taskService.editTask(id, taskDTO);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/")
-    public void addTask(@RequestBody TaskDTO taskDTO) {
+    @ResponseBody
+    public ResponseEntity<?> addTask(@RequestBody TaskDTO taskDTO) {
         taskService.addTask(taskDTO);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public void deleteTask(Model model, @PathVariable("id") int id) {
+    public ResponseEntity<?> deleteTask(@PathVariable("id") int id) {
         taskService.deleteTask(id);
+        return ResponseEntity.ok().build();
     }
-
 }

@@ -9,5 +9,6 @@ public interface TaskDAO {
     void addTask(Task task);
     void editTask(Task task);
     void deleteTask(Task task);
+    int getTaskCount();
     List<Task>  getTasksPaged(int  page, int pageSize);
 }

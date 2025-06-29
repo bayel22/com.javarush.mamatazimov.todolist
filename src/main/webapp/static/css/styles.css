@@ -1,0 +1,15 @@
+body {
+    background-color: #f8f9fa;
+}
+
+table td, table th {
+    vertical-align: middle !important;
+}
+
+input.desc-edit {
+    width: 100%;
+}
+
+select.status-edit {
+    width: 100%;
+}

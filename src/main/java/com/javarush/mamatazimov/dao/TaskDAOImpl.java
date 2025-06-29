@@ -41,7 +41,17 @@ public class TaskDAOImpl implements TaskDAO {
         sessionFactory.getCurrentSession().persist(task);
     }
 
+    @Override
     public void editTask(Task task) {
         sessionFactory.getCurrentSession().merge(task);
     }
+
+    @Override
+    public int getTaskCount() {
+        Long count = sessionFactory.getCurrentSession()
+                .createQuery("select count(*) from Task", Long.class)
+                .getSingleResult();
+        return count.intValue();
+    }
+
 }
